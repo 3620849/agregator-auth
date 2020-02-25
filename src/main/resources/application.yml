@@ -1,0 +1,13 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            client-id: 3fc03cc0bc932bb75a05
+            lient-secret: cb50c7e72dab4315e59e344c3108bdedadb9e843
+            token-uri: https://github.com/login/oauth/access_token
+            authorization-uri: https://github.com/login/oauth/authorize
+        provider:
+          github:
+            user-info-uri: https://api.github.com/user
