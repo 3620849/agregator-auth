@@ -1,24 +1,74 @@
 package com.weiss.weiss.controllers;
 
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContext;
+import com.weiss.weiss.config.UserAuthentication;
+import com.weiss.weiss.exceptions.ErrorObj;
+import com.weiss.weiss.model.BaseToken;
+import com.weiss.weiss.model.SystemSettings;
+import com.weiss.weiss.model.UserInfo;
+import com.weiss.weiss.services.OauthService;
+import com.weiss.weiss.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
 public class UserController {
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    @Autowired
+    UserService userService;
+    @Autowired
+    OauthService oauthService;
+    @Autowired
+    SystemSettings systemSettings;
 
-    @RequestMapping("/user/{userId}")
-    public String getUser(@PathVariable("userId") String userId){
-        SecurityContext context = SecurityContextHolder.getContext();
-        return ""+context.getAuthentication().getDetails().toString() + "'}";
-    }
-    @RequestMapping("/authenticate")
-    public String getAuth(  String userId){
-        return "123";
+    @RequestMapping("/s/ka")
+    public ResponseEntity<Boolean> keepAlive() {
+        return new ResponseEntity<>(true, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/p/user", method = RequestMethod.PUT, consumes = "application/json")
+    public ResponseEntity registerNewUser(@RequestBody UserInfo userInfo) {
+        userInfo.setMail(userInfo.getLogin());
+        try {
+            userService.addNewUser(userInfo);
+        } catch (IllegalArgumentException e) {
+            LOGGER.error(e.getMessage());
+            return new ResponseEntity(ErrorObj.builder().message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @RequestMapping("/p/user/{userId}")
+    public ResponseEntity<UserInfo> getUser(@PathVariable("userId") String userId) {
+        ResponseEntity<UserInfo> response;
+        try {
+            response = new ResponseEntity(userService.findById(userId), HttpStatus.OK);
+        } catch (UsernameNotFoundException e) {
+            response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return response;
+    }
+
+    @RequestMapping("/s/user")
+    public ResponseEntity<UserInfo> getCurrentUserData() {
+        UserAuthentication authentication = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        return new ResponseEntity(authentication.getUserInfo(), HttpStatus.OK);
+    }
+
+
+    @RequestMapping(value = "/p/token", method = RequestMethod.GET)
+    public BaseToken authorize(@RequestParam("code") String code, @RequestParam("provider") String provider) {
+        return oauthService.getToken(code, provider);
+    }
+
+    @RequestMapping(value = "/p/systemSettings", method = RequestMethod.GET)
+    public SystemSettings getSystemSettings() {
+        return systemSettings;
+    }
 }

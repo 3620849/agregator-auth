@@ -1,8 +1,8 @@
 package com.weiss.weiss.config.filters;
 
 import com.weiss.weiss.config.UserAuthentication;
+import com.weiss.weiss.config.parsers.*;
 import com.weiss.weiss.model.UserInfo;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,27 +19,29 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
 
     public LoginFilter(RequestMatcher requiresAuthenticationRequestMatcher){
       super(requiresAuthenticationRequestMatcher);
-
   }
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        SecurityContextHolder.getContext().setAuthentication(authResult);
+        UserAuthentication auth = (UserAuthentication) authResult;
+        SecurityContextHolder.getContext().setAuthentication(auth);
+        response.setHeader("X-Auth-Token",auth.getAccessToken());
         chain.doFilter(request,response);
-
     }
+
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
-        //TODO check who is the user
-        //get from header token or user name and password
-        //if request has authorization
-        //check if authentication is valid
-        //set authentication to request
-        String s = httpServletRequest.getRequestURL().toString();
-        Authentication auth = new UserAuthentication(new UserInfo());
-        if(s.equals("http://localhost:8080/api/authenticate")){
-            boolean isA=true;
-            auth.setAuthenticated(isA);
+    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException, IOException, ServletException {
+        UserAuthentication auth = new UserAuthentication(new UserInfo());
+        new FbParser().parseRequest("Fb-Oauth-Token",auth,req);
+        new VkParser().parseRequest("Vk-Oauth-Token",auth,req);
+        new GitHubParser().parseRequest("Git-Hub-Oauth-Token",auth,req);
+        new TokenHeaderParser().parseRequest("X-Auth-Token",auth,req);
+        new BasicHeaderParser().parseRequest("Authorization",auth,req);
+        return this.getAuthenticationManager().authenticate(auth);
         }
-        AuthenticationManager manager = this.getAuthenticationManager();
-        return manager.authenticate(auth); }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        super.unsuccessfulAuthentication(request, response, failed);
+        System.out.println("error");
+    }
 }

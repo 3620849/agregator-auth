@@ -1,23 +1,42 @@
 package com.weiss.weiss.model;
 
 
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-
-public class UserInfo extends User {
-    public UserInfo(){
-        super("x","xx", Arrays.asList(new UserAutority(Role.ROLE_ADMIN.name())));
-    }
-    public UserInfo(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
-    }
-
-    public UserInfo(String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
+import java.util.*;
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
+public class UserInfo implements UserDetails {
+    private String id;
+    private List<UserAutority> authorities;
+    private String password;
+    private String username;
+    private String login;
+    private String mail;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean enabled;
+    public void grantRole(Role r){
+        if(authorities==null){
+            authorities = new ArrayList<>();
+        }
+        if(authorities.size()>0){
+            if(authorities.stream().anyMatch(g->g.getAuthority().equals(r.name()))){
+                return;
+            }
+        };
+        UserAutority userAutority = new UserAutority();
+        userAutority.setAuthority(r.name());
+        authorities.add(userAutority);
     }
 }

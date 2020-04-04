@@ -1,26 +1,22 @@
 package com.weiss.weiss.config;
 
 import com.weiss.weiss.model.UserInfo;
+import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
-
+@Data
 public class UserAuthentication implements Authentication {
-    private final UserInfo userInfo;
+    private UserInfo userInfo;
     private boolean auth = false;
     private String accessToken;
+    private String gitHubToken;
+    private String vkToken;
+    private String fbToken;
 
     public UserAuthentication(UserInfo userInfo) {
         this.userInfo = userInfo;
-    }
-
-    public String getAccessToken() {
-        return accessToken;
-    }
-
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 
     @Override
