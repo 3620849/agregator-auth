@@ -1,6 +1,7 @@
 package com.weiss.weiss.converters;
 
 import com.weiss.weiss.model.fb.FbUser;
+import com.weiss.weiss.model.ggl.GglUser;
 import com.weiss.weiss.model.git.GitHubUser;
 import com.weiss.weiss.model.UserInfo;
 import com.weiss.weiss.model.vk.VkUser;
@@ -16,5 +17,8 @@ public class UserConverter {
     }
     public UserInfo convert(FbUser user){
         return UserInfo.builder().mail(user.getEmail()).username(user.getFirst_name()).build();
+    }
+    public UserInfo convert(GglUser gglUserData) {
+        return UserInfo.builder().mail(gglUserData.getEmail()).username(gglUserData.getName()).build();
     }
 }

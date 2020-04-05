@@ -31,6 +31,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException, IOException, ServletException {
         UserAuthentication auth = new UserAuthentication(new UserInfo());
+        new GglParser().parseRequest("Ggl-Oauth-Token",auth,req);
         new FbParser().parseRequest("Fb-Oauth-Token",auth,req);
         new VkParser().parseRequest("Vk-Oauth-Token",auth,req);
         new GitHubParser().parseRequest("Git-Hub-Oauth-Token",auth,req);

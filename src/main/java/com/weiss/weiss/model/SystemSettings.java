@@ -13,6 +13,8 @@ public class SystemSettings {
    private String vk_userAuthorizationUrl;
    @Value("${fb.userAuthorizationUrl}")
    private String fb_userAuthorizationUrl;
+   @Value("${twt.userAuthorizationUrl}")
    private String twt_userAuthorizationUrl;
+   @Value("${ggl.userAuthorizationUrl}")
    private String ggl_userAuthorizationUrl;
 }
