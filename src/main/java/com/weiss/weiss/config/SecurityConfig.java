@@ -34,11 +34,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     FbAuthenticationProvider fbAuthenticationProvider;
     @Autowired
     GglAuthenticationProvider gglAuthenticationProvider;
+    @Autowired
+    DisAuthenticationProvider disAuthenticationProvider;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth)
             throws Exception {
         //pay attention order is important
+        auth.authenticationProvider(disAuthenticationProvider);
         auth.authenticationProvider(gglAuthenticationProvider);
         auth.authenticationProvider(fbAuthenticationProvider);
         auth.authenticationProvider(vkAuthenticationProvider);

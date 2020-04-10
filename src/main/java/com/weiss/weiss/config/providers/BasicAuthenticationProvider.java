@@ -23,25 +23,26 @@ public class BasicAuthenticationProvider implements AuthenticationProvider {
     TokenHandler tokenHandlerService;
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        UserAuthentication auth = (UserAuthentication)authentication;
+        UserAuthentication auth = (UserAuthentication) authentication;
         UserInfo details = (UserInfo) auth.getDetails();
-        if(details.getLogin()==null ||details.getPassword()==null){
+        if (details.getLogin() == null || details.getPassword() == null) {
             throw new BadCredentialsException("fuck off");
         }
         UserInfo userInfo = userService.findUserByLogin(details.getLogin());
 
-        if(details.getLogin().equals(userInfo.getLogin())){
-            if(passwordEncoder.matches(details.getPassword(),userInfo.getPassword())){
+        if (details.getLogin().equals(userInfo.getLogin())) {
+            if (passwordEncoder.matches(details.getPassword(), userInfo.getPassword())) {
                 details.setAuthorities(userInfo.getAuthorities());
-                auth.setAccessToken(tokenHandlerService.generateTokenId(userInfo.getId(),LocalDateTime.now().plusHours(24)));
+                auth.setAccessToken(tokenHandlerService.generateTokenId(userInfo.getId(), LocalDateTime.now().plusHours(24)));
                 auth.setAuthenticated(true);
-            }else {
+            } else {
                 throw new BadCredentialsException("fuck off");
             }
 
-        }else{
+        } else {
             throw new BadCredentialsException("fuck off");
         }
         return auth;
@@ -51,4 +52,4 @@ public class BasicAuthenticationProvider implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return true;
     }
-    }
+}

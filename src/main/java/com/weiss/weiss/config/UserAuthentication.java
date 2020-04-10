@@ -15,7 +15,7 @@ public class UserAuthentication implements Authentication {
     private String vkToken;
     private String fbToken;
     private String gglToken;
-    private String twtToken;
+    private String disToken;
 
     public UserAuthentication(UserInfo userInfo) {
         this.userInfo = userInfo;

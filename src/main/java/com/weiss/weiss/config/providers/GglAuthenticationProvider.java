@@ -9,6 +9,8 @@ import com.weiss.weiss.model.UserInfo;
 import com.weiss.weiss.model.fb.FbUser;
 import com.weiss.weiss.model.ggl.GglUser;
 import com.weiss.weiss.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -28,6 +30,7 @@ public class GglAuthenticationProvider implements AuthenticationProvider {
     UserConverter converter;
     @Value("${ggl.prefix}")
     public String LOGIN_PREFIX;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -37,12 +40,16 @@ public class GglAuthenticationProvider implements AuthenticationProvider {
         }
         GglUser gglUserData = gglUserDao.getGglUserData(auth.getGglToken());
         UserInfo userInfo = converter.convert(gglUserData);
-        userInfo.setLogin(LOGIN_PREFIX+gglUserData.getId());
+        userInfo.setLogin(LOGIN_PREFIX + gglUserData.getId());
         userInfo.grantRole(Role.ROLE_USER);
         try {
             userInfo = userService.findUserByLogin(userInfo);
         } catch (UsernameNotFoundException e) {
-            userService.addNewUser(userInfo);
+            try {
+                userService.addNewUser(userInfo);
+            } catch (IllegalArgumentException ex) {
+                LOGGER.error("User wasn't added cause" + ex.getMessage());
+            }
         }
         auth.setAuthenticated(true);
         ((UserAuthentication) authentication).setUserInfo(userInfo);

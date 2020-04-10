@@ -1,6 +1,7 @@
 package com.weiss.weiss.services;
 
 import com.weiss.weiss.model.BaseToken;
+import com.weiss.weiss.model.dis.DisToken;
 import com.weiss.weiss.model.fb.FbToken;
 import com.weiss.weiss.model.ggl.GglToken;
 import com.weiss.weiss.model.git.GitHubToken;
@@ -50,6 +51,13 @@ public class OauthService {
     @Value("${ggl.redirectUri}")
     private String gglRedirectUrl;
 
+    @Value("${dis.apiKey}")
+    private String disClientId;
+    @Value("${dis.apiSecret}")
+    private String disSecret;
+    @Value("${dis.redirectUri}")
+    private String disRedirectUrl;
+
     public BaseToken getToken(String code,String provider) {
        BaseToken token;
         switch (provider){
@@ -57,15 +65,28 @@ public class OauthService {
            case "vk": token = getVkToken(code); break;
            case "fb": token = getFbToken(code); break;
            case "ggl": token = getGglToken(code); break;
-           case "twt": token = getTwtToken(code); break;
+           case "dis": token = getDisToken(code); break;
            default: throw new IllegalArgumentException("Error you send provider: "+provider+" but allowed providers is git, vk, fb, twt, ggl ");
        }
         return token;
     }
 
-    private BaseToken getTwtToken(String code) {
-       //TODO implement
-        return null;
+    private BaseToken getDisToken(String code) {
+        LinkedMultiValueMap<String, String> data = new LinkedMultiValueMap<>();
+        data.add("client_id",disClientId);
+        data.add("client_secret",disSecret);
+        data.add("code",code);
+        data.add("grant_type","authorization_code");
+        data.add("redirect_uri",disRedirectUrl);
+        DisToken token = webClient.baseUrl("https://disqus.com").build()
+                .post().uri(uriBuilder -> uriBuilder.path("/api/oauth/2.0/access_token/").build())
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .body(BodyInserters.fromFormData(data))
+                .accept(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new AccessDeniedException("cant get disqus token")))
+                .bodyToMono(DisToken.class).block();
+        return  token;
     }
 
     private BaseToken getGglToken(String code) {

@@ -2,10 +2,10 @@ package com.weiss.weiss.config.providers;
 
 import com.weiss.weiss.config.UserAuthentication;
 import com.weiss.weiss.converters.UserConverter;
-import com.weiss.weiss.dao.VkUserDao;
+import com.weiss.weiss.dao.DisUserDao;
 import com.weiss.weiss.model.Role;
 import com.weiss.weiss.model.UserInfo;
-import com.weiss.weiss.model.vk.VkUser;
+import com.weiss.weiss.model.dis.DisqusResponse;
 import com.weiss.weiss.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,27 +19,26 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VkAuthenticationProvider implements AuthenticationProvider {
+public class DisAuthenticationProvider implements AuthenticationProvider {
     @Autowired
-    VkUserDao vkUserDao;
+    DisUserDao disUserDao;
     @Autowired
     UserService userService;
     @Autowired
     UserConverter converter;
-    @Value("${vk.prefix}")
+    @Value("${dis.prefix}")
     public String LOGIN_PREFIX;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserAuthentication auth = (UserAuthentication) authentication;
-        if (auth.getVkToken() == null || auth.getVkToken().isBlank()) {
+        if (auth.getDisToken() == null || auth.getDisToken().isBlank()) {
             throw new BadCredentialsException("token is null");
         }
-        VkUser vkUserData = vkUserDao.getVkUserData(auth.getVkToken());
-
-        UserInfo userInfo = converter.convert(vkUserData);
-        userInfo.setLogin(LOGIN_PREFIX + vkUserData.getId());
+        DisqusResponse disData = disUserDao.getDisUserData(auth.getDisToken());
+        UserInfo userInfo = converter.convert(disData);
+        userInfo.setLogin(LOGIN_PREFIX + disData.getId());
         userInfo.grantRole(Role.ROLE_USER);
         try {
             userInfo = userService.findUserByLogin(userInfo);

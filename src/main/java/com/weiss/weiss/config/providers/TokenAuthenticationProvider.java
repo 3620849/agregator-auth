@@ -6,6 +6,8 @@ import com.weiss.weiss.model.UserAutority;
 import com.weiss.weiss.model.UserInfo;
 import com.weiss.weiss.services.TokenHandler;
 import com.weiss.weiss.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,6 +25,7 @@ public class TokenAuthenticationProvider implements AuthenticationProvider {
     UserService userService;
     @Autowired
     TokenHandler tokenHandlerService;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserInfo details = (UserInfo)authentication.getDetails();
