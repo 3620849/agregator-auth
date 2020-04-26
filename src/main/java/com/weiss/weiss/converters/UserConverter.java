@@ -14,15 +14,15 @@ public class UserConverter {
         return UserInfo.builder().login(user.getLogin()).mail(user.getEmail()).build();
     }
     public UserInfo convert(VkUser user){
-        return UserInfo.builder().username(user.getFirst_name()).build();
+        return UserInfo.builder().username(user.getFirst_name()).photo(user.getPhoto_100()).build();
     }
     public UserInfo convert(FbUser user){
-        return UserInfo.builder().mail(user.getEmail()).username(user.getFirst_name()).build();
+        return UserInfo.builder().mail(user.getEmail()).photo(user.getPicture().getData().getUrl()).username(user.getFirst_name()).build();
     }
     public UserInfo convert(GglUser gglUserData) {
-        return UserInfo.builder().mail(gglUserData.getEmail()).username(gglUserData.getName()).build();
+        return UserInfo.builder().mail(gglUserData.getEmail()).photo(gglUserData.getPicture()).username(gglUserData.getName()).build();
     }
     public UserInfo convert(DisqusResponse disUserData) {
-        return UserInfo.builder().username(disUserData.getName()).build();
+        return UserInfo.builder().username(disUserData.getName()).photo(disUserData.getAvatar().getSmall().getPermalink()).build();
     }
 }

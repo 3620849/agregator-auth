@@ -48,7 +48,9 @@ public class UserController {
     public ResponseEntity<UserInfo> getUser(@PathVariable("userId") String userId) {
         ResponseEntity<UserInfo> response;
         try {
-            response = new ResponseEntity(userService.findById(userId), HttpStatus.OK);
+            UserInfo user = userService.findById(userId);
+            user.setPassword(null);
+            response = new ResponseEntity(user, HttpStatus.OK);
         } catch (UsernameNotFoundException e) {
             response = new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -58,7 +60,9 @@ public class UserController {
     @RequestMapping("/s/user")
     public ResponseEntity<UserInfo> getCurrentUserData() {
         UserAuthentication authentication = (UserAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return new ResponseEntity(authentication.getUserInfo(), HttpStatus.OK);
+        UserInfo userInfo = authentication.getUserInfo();
+        userInfo.setPassword("");
+        return new ResponseEntity(userInfo, HttpStatus.OK);
     }
 
 
