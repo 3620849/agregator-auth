@@ -21,6 +21,8 @@ src/main/resources/public/**
 *.iws
 *.iml
 *.ipr
+*.gz
+*.log
 
 ### NetBeans ###
 /nbproject/private/

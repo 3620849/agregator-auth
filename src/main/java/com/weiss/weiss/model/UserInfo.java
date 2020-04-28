@@ -23,6 +23,8 @@ public class UserInfo implements UserDetails {
     private String login;
     private String mail;
     private String photo;
+    private String currentClientId;
+    private List<String> clientIdList;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;

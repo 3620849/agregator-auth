@@ -1,6 +1,5 @@
 package com.weiss.weiss.model.git;
 
-import com.weiss.weiss.model.Plan;
 import lombok.Data;
 
 @Data

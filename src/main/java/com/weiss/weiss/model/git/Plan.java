@@ -1,4 +1,4 @@
-package com.weiss.weiss.model;
+package com.weiss.weiss.model.git;
 
 import lombok.Data;
 
