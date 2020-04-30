@@ -66,4 +66,21 @@ public class PostController {
         }
         return new ResponseEntity(postListNew, HttpStatus.OK);
     }
+
+    @RequestMapping(value = "/p/likeOrDislike", method = RequestMethod.GET)
+    public ResponseEntity likeOrDislike(@RequestParam("id") String publicationId,@RequestParam("val")byte value) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId ="";
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            Object principal = ((AnonymousAuthenticationToken) authentication).getPrincipal();
+            //TODO get client id and set it
+            userId="AN";
+        }
+        if (authentication instanceof UserAuthentication) {
+            UserInfo userInfo = ((UserAuthentication) authentication).getUserInfo();
+            userId = userInfo.getCurrentClientId();
+        }
+        postService.likeOrDislike(publicationId,userId,value);
+        return new ResponseEntity(HttpStatus.OK);
+    }
 }

@@ -16,4 +16,8 @@ public class PostService {
     public PostListDto getPostListNew(){
         return postDao.getListNewPost();
     }
+
+    public void likeOrDislike(String publicationId, String userId, byte val) {
+        postDao.likeOrDislike(publicationId,userId,val);
+    }
 }

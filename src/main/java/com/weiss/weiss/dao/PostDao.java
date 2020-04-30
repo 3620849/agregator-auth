@@ -34,4 +34,15 @@ public class PostDao {
                 .block();
         return postList;
     }
+
+    public void likeOrDislike(String publicationId, String userId, byte val) {
+        webClient.baseUrl("http://weiss-data").build().get().uri(uriBuilder -> uriBuilder.path("/api/likeOrDislike")
+                .queryParam("publicationId",publicationId)
+                .queryParam("userId",userId)
+                .queryParam("value",val).build())
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new IllegalArgumentException("can't create post")))
+                .bodyToMono(PostListDto.class)
+                .block();
+    }
 }
