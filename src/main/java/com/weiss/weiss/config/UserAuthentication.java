@@ -16,6 +16,7 @@ public class UserAuthentication implements Authentication {
     private String fbToken;
     private String gglToken;
     private String disToken;
+    private String androidToken;
 
     public UserAuthentication(UserInfo userInfo) {
         this.userInfo = userInfo;

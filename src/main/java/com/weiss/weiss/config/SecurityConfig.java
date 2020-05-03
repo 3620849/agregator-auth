@@ -36,17 +36,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     GglAuthenticationProvider gglAuthenticationProvider;
     @Autowired
     DisAuthenticationProvider disAuthenticationProvider;
+    @Autowired
+    AndroidGglAuthProvider androidGglAuthProvider;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth)
             throws Exception {
         //pay attention order is important
+        auth.authenticationProvider(tokenAuthProvider);
+        auth.authenticationProvider(androidGglAuthProvider);
         auth.authenticationProvider(disAuthenticationProvider);
         auth.authenticationProvider(gglAuthenticationProvider);
         auth.authenticationProvider(fbAuthenticationProvider);
         auth.authenticationProvider(vkAuthenticationProvider);
         auth.authenticationProvider(gitHubAuthenticationProvider);
-        auth.authenticationProvider(tokenAuthProvider);
         auth.authenticationProvider(basicAuthProvider);
     }
 

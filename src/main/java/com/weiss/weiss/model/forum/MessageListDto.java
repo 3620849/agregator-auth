@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PostListDto {
-    List<Post> postList;
-
+public class MessageListDto {
+    List<Message> messageList;
 }

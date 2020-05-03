@@ -1,23 +1,23 @@
 package com.weiss.weiss.services;
 
-import com.weiss.weiss.dao.PostDao;
-import com.weiss.weiss.model.forum.Post;
-import com.weiss.weiss.model.forum.PostListDto;
+import com.weiss.weiss.dao.MessageDao;
+import com.weiss.weiss.model.forum.Message;
+import com.weiss.weiss.model.forum.MessageListDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class PostService {
     @Autowired
-    PostDao postDao;
-    public void savePost(Post postMsg) {
-        postDao.save(postMsg);
+    MessageDao messageDao;
+    public void saveMessage(Message messageMsg) {
+        messageDao.save(messageMsg);
     }
-    public PostListDto getPostListNew(){
-        return postDao.getListNewPost();
+    public MessageListDto getMessageListNew(String type, long skip){
+        return messageDao.getMessageListNew(type,skip);
     }
 
-    public void likeOrDislike(String publicationId, String userId, byte val) {
-        postDao.likeOrDislike(publicationId,userId,val);
+    public boolean likeOrDislike(String messageId, String userId, String clientId, byte val) {
+       return messageDao.likeOrDislike(messageId,userId,clientId,val);
     }
 }

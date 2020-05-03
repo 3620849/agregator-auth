@@ -3,8 +3,9 @@ package com.weiss.weiss.controllers;
 import com.weiss.weiss.config.UserAuthentication;
 import com.weiss.weiss.exceptions.ErrorObj;
 import com.weiss.weiss.model.UserInfo;
-import com.weiss.weiss.model.forum.Post;
-import com.weiss.weiss.model.forum.PostListDto;
+import com.weiss.weiss.model.forum.Message;
+import com.weiss.weiss.model.forum.MessageListDto;
+import com.weiss.weiss.model.forum.MessageType;
 import com.weiss.weiss.services.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +23,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-public class PostController {
+public class MessageController {
     @Autowired
     PostService postService;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    @RequestMapping(value = "/p/post", method = RequestMethod.PUT, consumes = "application/json")
-    public ResponseEntity registerNewUser(@RequestBody Post postMsg) {
+    @RequestMapping(value = "/p/message", method = RequestMethod.PUT, consumes = "application/json")
+    public ResponseEntity registerNewUser(@RequestBody Message messageMsg) {
         //TODO generate shortContent in post object
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof AnonymousAuthenticationToken) {
@@ -38,11 +39,16 @@ public class PostController {
         }
         if (authentication instanceof UserAuthentication) {
             UserInfo userInfo = ((UserAuthentication) authentication).getUserInfo();
-            postMsg.setClientId(userInfo.getCurrentClientId());
-            postMsg.setUserId(userInfo.getId());
+            messageMsg.setClientId(userInfo.getCurrentClientId());
+            messageMsg.setUserId(userInfo.getId());
+        }
+        if(messageMsg.getAncestorId()==null){
+            messageMsg.setType(MessageType.POST);
+        }else {
+            messageMsg.setType(MessageType.COMMENT);
         }
         try {
-            postService.savePost(postMsg);
+            postService.saveMessage(messageMsg);
         } catch (IllegalArgumentException e) {
             LOGGER.error(e.getMessage());
             return new ResponseEntity(ErrorObj.builder().message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
@@ -50,37 +56,43 @@ public class PostController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/p/post", method = RequestMethod.GET)
-    public ResponseEntity registerNewUser(@RequestParam("type") String type, @RequestParam("page") int page) {
+    @RequestMapping(value = "/p/message", method = RequestMethod.GET)
+    public ResponseEntity getListOfMsg(@RequestParam("type") String type, @RequestParam("skip") long skip) {
         //TODO implement pagination
-        PostListDto postListNew = null;
+        MessageListDto msgListNew = null;
         try {
-            postListNew = postService.getPostListNew();
-            List<Post> list = postListNew.getPostList().stream().map(post ->{
-                post.setResponseTime(new Date().getTime());return post;}
+            msgListNew = postService.getMessageListNew(type,skip);
+            List<Message> list = msgListNew.getMessageList().stream().map(message ->{
+                message.setResponseTime(new Date().getTime());return message;}
             ).collect(Collectors.toList());
-            postListNew.setPostList(list);
+            msgListNew.setMessageList(list);
         } catch (IllegalArgumentException e) {
             LOGGER.error(e.getMessage());
             return new ResponseEntity(ErrorObj.builder().message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity(postListNew, HttpStatus.OK);
+        return new ResponseEntity(msgListNew, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/p/likeOrDislike", method = RequestMethod.GET)
-    public ResponseEntity likeOrDislike(@RequestParam("id") String publicationId,@RequestParam("val")byte value) {
+    public ResponseEntity likeOrDislike(@RequestParam("messageId") String messageId,
+                                        @RequestParam("value")byte value) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId ="";
+        String userId =null;
+        String clientId =null;
         if (authentication instanceof AnonymousAuthenticationToken) {
             Object principal = ((AnonymousAuthenticationToken) authentication).getPrincipal();
             //TODO get client id and set it
-            userId="AN";
+            clientId ="123";
         }
         if (authentication instanceof UserAuthentication) {
             UserInfo userInfo = ((UserAuthentication) authentication).getUserInfo();
             userId = userInfo.getCurrentClientId();
         }
-        postService.likeOrDislike(publicationId,userId,value);
-        return new ResponseEntity(HttpStatus.OK);
+        boolean result = postService.likeOrDislike(messageId,userId,clientId,value);
+        if(result){
+            return new ResponseEntity(HttpStatus.OK);
+        }else {
+            return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
+        }
     }
 }

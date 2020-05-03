@@ -6,6 +6,7 @@ import lombok.Data;
 public class GglUser {
     String id;
     String email;
+    String sub;
     boolean verified_email;
     String name;
     String given_name;
