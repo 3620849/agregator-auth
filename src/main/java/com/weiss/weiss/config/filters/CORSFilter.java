@@ -27,7 +27,7 @@ public class CORSFilter implements Filter {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Expose-Headers",  "X-Auth-Token, Access-Control-Expose-Headers,Authorization, Cache-Control, Content-Type, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Origin");
-        response.setHeader("Access-Control-Allow-Headers", "M-Token, Dis-Oauth-Token, Ggl-Oauth-Token,Fb-Oauth-Token,Vk-Oauth-Token, Git-Hub-Oauth-Token, X-Auth-Token, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
+        response.setHeader("Access-Control-Allow-Headers", "Client-Id ,M-Token, Dis-Oauth-Token, Ggl-Oauth-Token,Fb-Oauth-Token,Vk-Oauth-Token, Git-Hub-Oauth-Token, X-Auth-Token, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
         if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
             response.setStatus(HttpServletResponse.SC_OK);
         } else {

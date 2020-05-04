@@ -32,15 +32,10 @@ public class MessageController {
     public ResponseEntity registerNewUser(@RequestBody Message messageMsg) {
         //TODO generate shortContent in post object
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            Object principal = ((AnonymousAuthenticationToken) authentication).getPrincipal();
-            //TODO get client id and set in post
-            //set user as anonymous
-        }
         if (authentication instanceof UserAuthentication) {
-            UserInfo userInfo = ((UserAuthentication) authentication).getUserInfo();
-            messageMsg.setClientId(userInfo.getCurrentClientId());
-            messageMsg.setUserId(userInfo.getId());
+            UserAuthentication auth = (UserAuthentication) authentication;
+            messageMsg.setUserData(auth.getUserInfo());
+            messageMsg.setClientId(auth.getClientId());
         }
         if(messageMsg.getAncestorId()==null){
             messageMsg.setType(MessageType.POST);
@@ -79,14 +74,11 @@ public class MessageController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId =null;
         String clientId =null;
-        if (authentication instanceof AnonymousAuthenticationToken) {
-            Object principal = ((AnonymousAuthenticationToken) authentication).getPrincipal();
-            //TODO get client id and set it
-            clientId ="123";
-        }
         if (authentication instanceof UserAuthentication) {
-            UserInfo userInfo = ((UserAuthentication) authentication).getUserInfo();
-            userId = userInfo.getCurrentClientId();
+            UserAuthentication auth = (UserAuthentication) authentication;
+            UserInfo userInfo = auth.getUserInfo();
+            userId = userInfo.getId();
+            clientId = auth.getClientId();
         }
         boolean result = postService.likeOrDislike(messageId,userId,clientId,value);
         if(result){

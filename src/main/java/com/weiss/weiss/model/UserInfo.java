@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -23,7 +25,6 @@ public class UserInfo implements UserDetails {
     private String login;
     private String mail;
     private String photo;
-    private String currentClientId;
     private List<String> clientIdList;
     private boolean accountNonExpired;
     private boolean accountNonLocked;
@@ -41,5 +42,11 @@ public class UserInfo implements UserDetails {
         UserAutority userAutority = new UserAutority();
         userAutority.setAuthority(r.name());
         authorities.add(userAutority);
+    }
+    public void removeRole(Role role){
+        if(authorities.size()>0) {
+            List<UserAutority> list = authorities.stream().filter(r -> r.getAuthority().equals(role.name())).collect(Collectors.toList());
+            this.authorities = list;
+        }
     }
 }

@@ -39,11 +39,11 @@ public class FbAuthenticationProvider implements AuthenticationProvider {
         FbUser fbUserData = fbUserDao.getFbUserData(auth.getFbToken());
         UserInfo userInfo = converter.convert(fbUserData);
         userInfo.setLogin(LOGIN_PREFIX + fbUserData.getId());
-        userInfo.grantRole(Role.ROLE_USER);
         try {
             userInfo = userService.findUserByLogin(userInfo);
         } catch (UsernameNotFoundException e) {
             try {
+                userInfo.grantRole(Role.ROLE_USER);
                 userService.addNewUser(userInfo);
             } catch (IllegalArgumentException ex) {
                 LOGGER.error("User wasn't added cause" + ex.getMessage());

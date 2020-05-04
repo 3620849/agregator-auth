@@ -41,11 +41,11 @@ public class GglAuthenticationProvider implements AuthenticationProvider {
         GglUser gglUserData = gglUserDao.getGglUserData(auth.getGglToken());
         UserInfo userInfo = converter.convert(gglUserData);
         userInfo.setLogin(LOGIN_PREFIX + gglUserData.getId());
-        userInfo.grantRole(Role.ROLE_USER);
         try {
             userInfo = userService.findUserByLogin(userInfo);
         } catch (UsernameNotFoundException e) {
             try {
+                userInfo.grantRole(Role.ROLE_USER);
                 userService.addNewUser(userInfo);
             } catch (IllegalArgumentException ex) {
                 LOGGER.error("User wasn't added cause" + ex.getMessage());

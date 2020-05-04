@@ -39,11 +39,11 @@ public class GitHubAuthenticationProvider implements AuthenticationProvider {
         GitHubUser gitHubUser = gitHubUserDao.getGitHubUserData(auth.getGitHubToken());
         gitHubUser.setLogin(LOGIN_PREFIX + gitHubUser.getLogin());
         UserInfo userInfo = converter.convert(gitHubUser);
-        userInfo.grantRole(Role.ROLE_USER);
         try {
             userInfo = userService.findUserByLogin(userInfo);
         } catch (UsernameNotFoundException e) {
             try {
+                userInfo.grantRole(Role.ROLE_USER);
                 userService.addNewUser(userInfo);
             } catch (IllegalArgumentException ex) {
                 LOGGER.error("User wasn't added cause" + ex.getMessage());

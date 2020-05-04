@@ -2,11 +2,13 @@ package com.weiss.weiss.config;
 
 import com.weiss.weiss.model.UserInfo;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 @Data
+@NoArgsConstructor
 public class UserAuthentication implements Authentication {
     private UserInfo userInfo;
     private boolean auth = false;
@@ -17,6 +19,7 @@ public class UserAuthentication implements Authentication {
     private String gglToken;
     private String disToken;
     private String androidToken;
+    private String clientId;
 
     public UserAuthentication(UserInfo userInfo) {
         this.userInfo = userInfo;

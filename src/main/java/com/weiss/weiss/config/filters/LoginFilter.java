@@ -2,7 +2,10 @@ package com.weiss.weiss.config.filters;
 
 import com.weiss.weiss.config.UserAuthentication;
 import com.weiss.weiss.config.parsers.*;
+import com.weiss.weiss.model.Role;
 import com.weiss.weiss.model.UserInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
-
     public LoginFilter(RequestMatcher requiresAuthenticationRequestMatcher){
       super(requiresAuthenticationRequestMatcher);
   }
@@ -31,6 +33,7 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException, IOException, ServletException {
         UserAuthentication auth = new UserAuthentication(new UserInfo());
+        new ClientIdParser().parseRequest("Client-Id",auth,req);
         new AndroidParser().parseRequest("M-Token",auth,req);
         new DisParser().parseRequest("Dis-Oauth-Token",auth,req);
         new GglParser().parseRequest("Ggl-Oauth-Token",auth,req);
@@ -45,6 +48,5 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         super.unsuccessfulAuthentication(request, response, failed);
-        System.out.println("error");
     }
 }

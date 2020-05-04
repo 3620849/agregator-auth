@@ -2,10 +2,9 @@ package com.weiss.weiss.controllers;
 
 import com.weiss.weiss.config.UserAuthentication;
 import com.weiss.weiss.exceptions.ErrorObj;
-import com.weiss.weiss.model.BaseToken;
-import com.weiss.weiss.model.SystemSettings;
-import com.weiss.weiss.model.UserInfo;
+import com.weiss.weiss.model.*;
 import com.weiss.weiss.services.OauthService;
+import com.weiss.weiss.services.SystemSettingsService;
 import com.weiss.weiss.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ public class UserController {
     @Autowired
     OauthService oauthService;
     @Autowired
-    SystemSettings systemSettings;
+    SystemSettingsService systemSettingsService;
 
     @RequestMapping("/s/ka")
     public ResponseEntity<Boolean> keepAlive() {
@@ -35,6 +34,7 @@ public class UserController {
     @RequestMapping(value = "/p/user", method = RequestMethod.PUT, consumes = "application/json")
     public ResponseEntity registerNewUser(@RequestBody UserInfo userInfo) {
         userInfo.setMail(userInfo.getLogin());
+        userInfo.grantRole(Role.ROLE_USER);
         try {
             userService.addNewUser(userInfo);
         } catch (IllegalArgumentException e) {
@@ -73,6 +73,7 @@ public class UserController {
 
     @RequestMapping(value = "/p/systemSettings", method = RequestMethod.GET)
     public SystemSettings getSystemSettings() {
-        return systemSettings;
+        ClientId settings = systemSettingsService.getSettings();
+        return settings;
     }
 }

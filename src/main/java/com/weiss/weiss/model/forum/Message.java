@@ -1,5 +1,6 @@
 package com.weiss.weiss.model.forum;
 
+import com.weiss.weiss.model.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,4 +26,18 @@ public class Message  {
     String header;
     List<Content> content;
     List<Content> shortContent;
+    public void setUserData(UserInfo userInfo){
+        userId = userInfo.getId();
+        userName = userInfo.getUsername();
+        if(userName==null || userName.isBlank()){
+            userName="Anonymous";
+            if(getUserId()!=null){
+                userName="No name";
+            }
+        }
+        userPhoto = userInfo.getPhoto();
+        if(userPhoto==null || userPhoto.isBlank()){
+            userPhoto="assets/logo.svg";
+        }
+    }
 }

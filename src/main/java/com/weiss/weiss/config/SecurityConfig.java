@@ -2,7 +2,6 @@ package com.weiss.weiss.config;
 
 import com.weiss.weiss.config.filters.LoginFilter;
 import com.weiss.weiss.config.providers.*;
-import com.weiss.weiss.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -38,6 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     DisAuthenticationProvider disAuthenticationProvider;
     @Autowired
     AndroidGglAuthProvider androidGglAuthProvider;
+    @Autowired
+    AnonymouseProvider anonymouseProvider;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth)
@@ -51,6 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(vkAuthenticationProvider);
         auth.authenticationProvider(gitHubAuthenticationProvider);
         auth.authenticationProvider(basicAuthProvider);
+        auth.authenticationProvider(anonymouseProvider);
     }
 
     @Override
@@ -67,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().addFilterBefore(getLoginFilter(), UsernamePasswordAuthenticationFilter.class);
     }
     public LoginFilter getLoginFilter() throws Exception {
-        LoginFilter loginFilter = new LoginFilter(new AntPathRequestMatcher("/api/s/**"));
+        LoginFilter loginFilter = new LoginFilter(new AntPathRequestMatcher("/api/**"));
         loginFilter.setAuthenticationManager(this.authenticationManager());
         return loginFilter;
     }

@@ -39,11 +39,11 @@ public class DisAuthenticationProvider implements AuthenticationProvider {
         DisqusResponse disData = disUserDao.getDisUserData(auth.getDisToken());
         UserInfo userInfo = converter.convert(disData);
         userInfo.setLogin(LOGIN_PREFIX + disData.getId());
-        userInfo.grantRole(Role.ROLE_USER);
         try {
             userInfo = userService.findUserByLogin(userInfo);
         } catch (UsernameNotFoundException e) {
             try {
+                userInfo.grantRole(Role.ROLE_USER);
                 userService.addNewUser(userInfo);
             } catch (IllegalArgumentException ex) {
                 LOGGER.error("User wasn't added cause" + ex.getMessage());
