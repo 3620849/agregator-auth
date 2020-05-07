@@ -60,7 +60,7 @@ public class PostService {
                 case "text_over_media":result= EntryStream.of(content).limit(2).map(o->{
                     Content build = Content.builder().index(o.getKey()).type(o.getValue().getType()).url(o.getValue().getUrl()).build();
                     if(o.getValue().getType().equals("text")){
-                      build.setText(o.getValue().getText().substring(0, Math.min(o.getValue().getText().length(),150))+"...");
+                      build.setText(o.getValue().getText().substring(0, Math.min(o.getValue().getText().length(),1000))+"...");
                     }
                     return build;
 
@@ -95,12 +95,12 @@ public class PostService {
             } else if(c==1){
                 state="text_media";
                 if(content.get(0).getType().equals("text")){
-                    if(content.get(0).getText().length()>150){
+                    if(content.get(0).getText().length()>1000){
                         state = "text_over_media";
                     }
                 }else {
                     state="media_text";
-                    if(content.get(1).getText().length()>150){
+                    if(content.get(1).getText().length()>1000){
                         state = "media_text_over";
                     }
                 }
