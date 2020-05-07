@@ -10,19 +10,24 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
-public class AnonymouseProvider implements AuthenticationProvider {
+public class AnonymousProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         UserAuthentication auth = (UserAuthentication) authentication;
         if (auth.getClientId() == null || auth.getClientId().isBlank()) {
-            throw new BadCredentialsException("illegal argument exception");
+            UUID uuid = UUID.randomUUID();
+            String id = uuid.toString();
+            auth.setClientId("NO-CLIENT-"+id);
         }
         if(!auth.isAuth()){
             UserInfo userInfo = auth.getUserInfo();
             userInfo.grantRole(Role.ROLE_ANONYMOUS);
         }
+        auth.setAuth(true);
         return auth;
     }
 

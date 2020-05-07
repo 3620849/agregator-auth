@@ -38,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     AndroidGglAuthProvider androidGglAuthProvider;
     @Autowired
-    AnonymouseProvider anonymouseProvider;
+    AnonymousProvider anonymousProvider;
 
     @Override
     public void configure(AuthenticationManagerBuilder auth)
@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(vkAuthenticationProvider);
         auth.authenticationProvider(gitHubAuthenticationProvider);
         auth.authenticationProvider(basicAuthProvider);
-        auth.authenticationProvider(anonymouseProvider);
+        auth.authenticationProvider(anonymousProvider);
     }
 
     @Override

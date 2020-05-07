@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -36,6 +35,7 @@ public class MessageController {
             UserAuthentication auth = (UserAuthentication) authentication;
             messageMsg.setUserData(auth.getUserInfo());
             messageMsg.setClientId(auth.getClientId());
+            messageMsg.setShortContent(postService.truncateContent(messageMsg));
         }
         if(messageMsg.getAncestorId()==null){
             messageMsg.setType(MessageType.POST);
@@ -50,6 +50,10 @@ public class MessageController {
         }
         return new ResponseEntity(HttpStatus.OK);
     }
+
+
+
+
 
     @RequestMapping(value = "/p/message", method = RequestMethod.GET)
     public ResponseEntity getListOfMsg(@RequestParam("type") String type, @RequestParam("skip") long skip) {
