@@ -42,6 +42,8 @@ public class PostService {
                 case "text":
                 case "text_text":
                 case "media":
+                case "media_text":
+                case "media_media":
                 case "text_media":result=content.stream().limit(2).collect(Collectors.toList());break;
                 case "text_over_text":result=content.stream().limit(1).map(o->Content
                         .builder()
@@ -66,8 +68,6 @@ public class PostService {
 
                 }).collect(Collectors.toList());
                     break;
-                    //TODO we need add some link that users will know that here is more content in media media
-                case "media_media": result=content.stream().limit(1).collect(Collectors.toList());break;
                 case "text_over":result=content.stream()
                         .map(o->Content.builder()
                                 .index(o.getIndex())
