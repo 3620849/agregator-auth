@@ -2,6 +2,7 @@ package com.weiss.weiss.model;
 
 
 
+import com.weiss.weiss.model.forum.MyMark;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +27,8 @@ public class UserInfo implements UserDetails {
     private String mail;
     private String photo;
     private List<String> clientIdList;
+    private List<MyMark> markList;
+
     private boolean accountNonExpired;
     private boolean accountNonLocked;
     private boolean credentialsNonExpired;
