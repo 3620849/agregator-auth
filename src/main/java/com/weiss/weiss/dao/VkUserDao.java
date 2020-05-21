@@ -24,8 +24,11 @@ public class VkUserDao {
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new UsernameNotFoundException("cant read github token")))
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new UsernameNotFoundException("cant read vk token")))
                 .bodyToMono(VkUserDto.class).block();
+        if(vuUserDto==null || vuUserDto.getResponse()==null || vuUserDto.getResponse().length<1){
+            new UsernameNotFoundException("error vk response empty");
+        }
         return vuUserDto.getResponse()[0];
     }
 }

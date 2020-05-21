@@ -3,6 +3,7 @@ package com.weiss.weiss.controllers;
 import com.weiss.weiss.config.UserAuthentication;
 import com.weiss.weiss.exceptions.ErrorObj;
 import com.weiss.weiss.model.UserInfo;
+import com.weiss.weiss.model.forum.ListMessages;
 import com.weiss.weiss.model.forum.Message;
 import com.weiss.weiss.model.forum.MessageListDto;
 import com.weiss.weiss.model.forum.MessageType;
@@ -61,6 +62,26 @@ public class MessageController {
         MessageListDto msgListNew = null;
         try {
             msgListNew = postService.getMessageListNew(type,skip);
+            List<Message> list = msgListNew.getMessageList().stream().map(message ->{
+                message.setResponseTime(new Date().getTime());return message;}
+            ).collect(Collectors.toList());
+            msgListNew.setMessageList(list);
+        } catch (IllegalArgumentException e) {
+            LOGGER.error(e.getMessage());
+            return new ResponseEntity(ErrorObj.builder().message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(msgListNew, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/p/message", method = RequestMethod.POST , consumes = "application/json")
+    public ResponseEntity getListOfMsg(@RequestBody ListMessages idsList) {
+        //TODO implement pagination
+        MessageListDto msgListNew = null;
+        try {
+            if(idsList==null || idsList.getIdsList()==null || idsList.getIdsList().length<1){
+                throw new IllegalArgumentException("id list is empty");
+            }
+            msgListNew = postService.getMessageListById(idsList);
             List<Message> list = msgListNew.getMessageList().stream().map(message ->{
                 message.setResponseTime(new Date().getTime());return message;}
             ).collect(Collectors.toList());

@@ -1,5 +1,6 @@
 package com.weiss.weiss.dao;
 
+import com.weiss.weiss.model.forum.ListMessages;
 import com.weiss.weiss.model.forum.Message;
 import com.weiss.weiss.model.forum.MessageListDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class MessageDao {
     WebClient.Builder webClient;
 
     public void save(Message messageMsg) {
-        webClient.build().post().uri("http://weiss-data/api/message")
+        webClient.build().put().uri("http://weiss-data/api/message")
                 .bodyValue (messageMsg)
                 .retrieve()
                 .onStatus(HttpStatus::is4xxClientError, clientResponse-> Mono.error(new IllegalArgumentException("can't create post")))
@@ -46,5 +47,15 @@ public class MessageDao {
                 .bodyToMono(Boolean.class)
                 .block();
         return result;
+    }
+
+    public MessageListDto getMessageListById(ListMessages idList) {
+        MessageListDto list = webClient.build().post().uri("http://weiss-data/api/message")
+                .bodyValue(idList)
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new IllegalArgumentException("can't create post")))
+                .bodyToMono(MessageListDto.class)
+                .block();
+        return list;
     }
 }

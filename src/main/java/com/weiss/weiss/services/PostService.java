@@ -2,6 +2,7 @@ package com.weiss.weiss.services;
 
 import com.weiss.weiss.dao.MessageDao;
 import com.weiss.weiss.model.forum.Content;
+import com.weiss.weiss.model.forum.ListMessages;
 import com.weiss.weiss.model.forum.Message;
 import com.weiss.weiss.model.forum.MessageListDto;
 import one.util.streamex.EntryStream;
@@ -119,5 +120,9 @@ public class PostService {
             }
         }
         return state;
+    }
+
+    public MessageListDto getMessageListById(ListMessages idList) {
+        return messageDao.getMessageListById(idList);
     }
 }
