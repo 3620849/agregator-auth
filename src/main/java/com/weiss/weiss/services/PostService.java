@@ -125,4 +125,8 @@ public class PostService {
     public MessageListDto getMessageListById(ListMessages idList) {
         return messageDao.getMessageListById(idList);
     }
+
+    public MessageListDto getMessageListByUserId(String userId, long skip) {
+        return messageDao.getMessageListByUserId(userId,skip);
+    }
 }

@@ -58,4 +58,16 @@ public class MessageDao {
                 .block();
         return list;
     }
+
+    public MessageListDto getMessageListByUserId(String userId, long skip) {
+        MessageListDto postList = webClient.baseUrl("http://weiss-data").build().get().uri(uriBuilder -> uriBuilder.path("api/user/message")
+                .queryParam("userId",userId)
+                .queryParam("skip",skip)
+                .build())
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new IllegalArgumentException("can't create post")))
+                .bodyToMono(MessageListDto.class)
+                .block();
+        return postList;
+    }
 }
