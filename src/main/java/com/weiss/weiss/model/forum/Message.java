@@ -1,10 +1,13 @@
 package com.weiss.weiss.model.forum;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.weiss.weiss.model.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import org.bson.types.ObjectId;
 import java.util.List;
 
 @NoArgsConstructor
@@ -15,8 +18,10 @@ public class Message  {
     long time;
     long responseTime;
     MessageType type;
-    String ancestorId;
-    String parentPostId;
+    @JsonSerialize(using= ToStringSerializer.class)
+    ObjectId ancestorId;
+    @JsonSerialize(using= ToStringSerializer.class)
+    ObjectId parentPostId;
     List<Like> markList;
     MetaDataSummary summary;
     String userId;
@@ -26,6 +31,7 @@ public class Message  {
     String header;
     List<Content> content;
     List<Content> shortContent;
+    List<Message> comments;
     public void setUserData(UserInfo userInfo){
         userId = userInfo.getId();
         userName = userInfo.getUsername();

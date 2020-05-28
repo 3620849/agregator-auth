@@ -70,4 +70,15 @@ public class MessageDao {
                 .block();
         return postList;
     }
+
+    public MessageListDto getCommentsById(String parentId) {
+        MessageListDto postList = webClient.baseUrl("http://weiss-data").build().get()
+                .uri(uriBuilder -> uriBuilder.path("api/comment/"+parentId)
+                .build())
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new IllegalArgumentException("can't get comments")))
+                .bodyToMono(MessageListDto.class)
+                .block();
+        return postList;
+    }
 }

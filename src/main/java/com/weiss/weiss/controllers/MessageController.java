@@ -30,7 +30,7 @@ public class MessageController {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
     @RequestMapping(value = "/p/message", method = RequestMethod.PUT, consumes = "application/json")
-    public ResponseEntity registerNewUser(@RequestBody Message messageMsg) {
+    public ResponseEntity addMessage(@RequestBody Message messageMsg) {
         //TODO generate shortContent in post object
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof UserAuthentication) {

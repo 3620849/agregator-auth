@@ -129,4 +129,8 @@ public class PostService {
     public MessageListDto getMessageListByUserId(String userId, long skip) {
         return messageDao.getMessageListByUserId(userId,skip);
     }
+
+    public MessageListDto getCommentsById(String parentId) {
+        return messageDao.getCommentsById(parentId);
+    }
 }
