@@ -42,6 +42,10 @@ public class UserController {
     public ResponseEntity<Boolean> keepAlive() {
         return new ResponseEntity<>(true, HttpStatus.OK);
     }
+    @RequestMapping("/p/ka")
+    public ResponseEntity<Boolean> keepAlivePublic() {
+        return new ResponseEntity<>(true, HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/p/user", method = RequestMethod.PUT, consumes = "application/json")
     public ResponseEntity registerNewUser(@RequestBody UserInfo userInfo) {
