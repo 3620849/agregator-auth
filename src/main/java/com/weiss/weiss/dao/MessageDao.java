@@ -81,4 +81,15 @@ public class MessageDao {
                 .block();
         return postList;
     }
+
+    public boolean removeMessageById(String messageId) {
+        Boolean result =  webClient.baseUrl("http://weiss-data").build().delete()
+                .uri(uriBuilder -> uriBuilder.path("api/user/message/"+messageId)
+                        .build())
+                .retrieve()
+                .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new IllegalArgumentException("can't get comments")))
+                .bodyToMono(Boolean.class)
+                .block();
+        return result;
+    }
 }

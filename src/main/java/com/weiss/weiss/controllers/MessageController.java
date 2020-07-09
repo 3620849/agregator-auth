@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -53,10 +54,6 @@ public class MessageController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-
-
-
-
     @RequestMapping(value = "/p/message", method = RequestMethod.GET)
     public ResponseEntity getListOfMsg(@RequestParam("type") String type, @RequestParam("skip") long skip) {
         //TODO implement pagination
@@ -64,6 +61,7 @@ public class MessageController {
         try {
             msgListNew = postService.getMessageListNew(type,skip);
             List<Message> list = msgListNew.getMessageList().stream().map(message ->{
+               message.setEditable(checkIsEditable(message));
                 message.setResponseTime(new Date().getTime());return message;}
             ).collect(Collectors.toList());
             msgListNew.setMessageList(list);
@@ -73,6 +71,33 @@ public class MessageController {
         }
         return new ResponseEntity(msgListNew, HttpStatus.OK);
     }
+    private boolean checkIsEditable(Message message){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid=null;
+        if (authentication instanceof UserAuthentication) {
+            UserAuthentication userAuth = (UserAuthentication) authentication;
+            uid = userAuth.getUserInfo().getId();
+            Set<String> roles =userAuth.getAuthorities().stream()
+                    .map(r -> r.getAuthority()).collect(Collectors.toSet());
+            if (roles.contains("ROLE_ADMIN")) {
+                return true;
+            }
+            if(uid==null){
+                uid = userAuth.getClientId();
+            }
+        }
+        if(uid==null){
+           throw new IllegalArgumentException("no such user or wrong client");
+        }
+        String muid = message.getUserId();
+        if(muid==null){
+            muid=message.getClientId();
+        }
+        if(uid.equals(muid)){
+            return true;
+        }
+        return false;
+    };
 
     @RequestMapping(value = "/p/message", method = RequestMethod.POST , consumes = "application/json")
     public ResponseEntity getListOfMsg(@RequestBody ListMessages idsList) {
@@ -95,6 +120,15 @@ public class MessageController {
             return new ResponseEntity(ErrorObj.builder().message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity(msgListNew, HttpStatus.OK);
+    }
+    @RequestMapping(value = "/s/message/{messageId}",method = RequestMethod.DELETE)
+    public ResponseEntity<MessageListDto> removeMessageById(@PathVariable("messageId") String messageId){
+        boolean result = postService.removeMessageById(messageId);
+        if(result){
+            return new ResponseEntity(HttpStatus.OK);
+        }else {
+            return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+        }
     }
 
     @RequestMapping(value = "/p/likeOrDislike", method = RequestMethod.GET)

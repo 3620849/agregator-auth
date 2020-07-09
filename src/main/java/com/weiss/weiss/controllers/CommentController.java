@@ -22,7 +22,7 @@ public class CommentController {
     PostService postService;
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     @RequestMapping(value = "/p/comment/{id}", method = RequestMethod.GET)
-    public ResponseEntity getListOfMsg(@PathVariable("id") String parentId) {
+    public ResponseEntity getParticularMsg(@PathVariable("id") String parentId) {
         MessageListDto msgListNew = null;
         try {
             msgListNew = postService.getCommentsById(parentId);

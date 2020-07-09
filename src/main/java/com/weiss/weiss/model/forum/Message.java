@@ -14,24 +14,25 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 public class Message  {
-    String id;
-    long time;
-    long responseTime;
-    MessageType type;
+    private String id;
+    private long time;
+    private long responseTime;
+    private MessageType type;
     @JsonSerialize(using= ToStringSerializer.class)
-    ObjectId ancestorId;
+    private   ObjectId ancestorId;
     @JsonSerialize(using= ToStringSerializer.class)
-    ObjectId parentPostId;
-    List<Like> markList;
-    MetaDataSummary summary;
-    String userId;
-    String userName;
-    String userPhoto;
-    String clientId;
-    String header;
-    List<Content> content;
-    List<Content> shortContent;
-    List<Message> comments;
+    private ObjectId parentPostId;
+    private List<Like> markList;
+    private  boolean isEditable;
+    private  MetaDataSummary summary;
+    private String userId;
+    private String userName;
+    private String userPhoto;
+    private String clientId;
+    private String header;
+    private List<Content> content;
+    private List<Content> shortContent;
+    private List<Message> comments;
     public void setUserData(UserInfo userInfo){
         userId = userInfo.getId();
         userName = userInfo.getUsername();
